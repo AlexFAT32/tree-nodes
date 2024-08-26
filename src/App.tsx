@@ -25,7 +25,6 @@ function App() {
 
   })
 
-
   if (isLoading || !data) {
     return <Loader color={"blue"} />
   }
@@ -39,7 +38,6 @@ function App() {
         <Tree nodes={data?.children} activeNode={activeNode} setActiveNode={setActiveNode} />
       </Card>
     </Container>
-
   )
 }
 
