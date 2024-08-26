@@ -1,0 +1,22 @@
+body {
+  display: block;
+
+}
+
+.tree-li{
+  cursor: pointer;
+}
+.tree-li-flex-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+.tree-li-action-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 1rem;
+}
