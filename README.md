@@ -1,7 +1,7 @@
 # React + TypeScript + Vite
 
 
-### API Issues:
+### Issues I've faced:
 
 * Content-type header is blocked on API
 * GET/POST request confusion
