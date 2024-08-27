@@ -13,6 +13,7 @@ import {UpdateNodeModal} from "./components/modals/update-node-modal.tsx";
 import {DeleteNodeModal} from "./components/modals/delete-node-modal.tsx";
 
 const queryClient = new QueryClient();
+
 const modals = {
   createNode: CreateNodeModal,
   updateNode: UpdateNodeModal,
@@ -22,7 +23,7 @@ const modals = {
 createRoot(document.getElementById('root')!).render(
 
     <MantineProvider>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient} >
         <Notifications />
         <ModalsProvider modals={modals}>
           <App />

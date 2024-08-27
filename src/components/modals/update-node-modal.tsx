@@ -22,11 +22,11 @@ export const UpdateNodeModal = ({ context, id, innerProps }: UpdateNodeModalProp
       });
       context.closeModal(id);
     },
-    onError: () => {
+    onError: (e) => {
 
       notifications.show({
         title: "Error",
-        message:  "Something bad happened.",
+        message:  e.message,
         color: "red",
       });
     },
@@ -45,14 +45,13 @@ export const UpdateNodeModal = ({ context, id, innerProps }: UpdateNodeModalProp
 
   const handleSubmit = (values: FormValues) => {
     console.log(values);
-    mutation.mutateAsync(values as unknown as void);
+    mutation.mutateAsync(values);
   };
-
 
   return (
     <Box maw={340} mx="auto">
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput withAsterisk label="Name" placeholder="space name" {...form.getInputProps("newNodeName")} />
+        <TextInput withAsterisk label="Name" placeholder="Node name" {...form.getInputProps("newNodeName")} />
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={() => context.closeModal(id)}>Cancel</Button>
           <Button type="submit">Update</Button>

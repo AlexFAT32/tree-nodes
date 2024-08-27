@@ -25,32 +25,42 @@ const callApi = async <TData>( req: ApiRequest) => {
 		url += `?${new URLSearchParams(req.params).toString()}`
 	}
 
-		const res = await fetch(url, {
-			method: req.method || "get",
-			// headers: {
-			// 	"Content-Type": "application/json",
-			// },
-			body: req.data ? JSON.stringify(req.data) : undefined,
-			credentials: "omit",
-			signal: req.signal
+	const res = await fetch(url, {
+		method: req.method || "get",
+		// headers: {
+		// 	"Content-Type": "application/json",
+		// },
+		body: req.data ? JSON.stringify(req.data) : undefined,
+		credentials: "omit",
+		signal: req.signal
 
 
-		});
-		if(res.ok){
-			const data = await res.text()
+	});
+	if(res.ok){
+		const data = await res.text()
 
-			// return (await res.json() || {}) as TData;
-			return ( data ? JSON.parse(data) : {} ) as TData;
-		} else {
+		// return (await res.json() || {}) as TData;
+		return ( data ? JSON.parse(data) : {} ) as TData;
+	} else {
 
-			const errorJSON = await res.text()
 
-			const errorMessage = JSON.parse(errorJSON).data.message
 
-			throw new Error(typeof errorMessage === "string" ? errorMessage :  "Something bad happened.")
+		let errorJSON = {}
+		try {
+			errorJSON = await res.json()
+		} catch (e){
+
 		}
 
+		const errorMessage = errorJSON?.data?.message || ""
 
+		console.log("BodyUsed", errorMessage)
+		if(errorMessage){
+
+			throw new Error(errorMessage)
+		}
+		throw new Error("Something bad happened.")
+	}
 
 };
 
@@ -78,7 +88,7 @@ export type UseApiMutationOptions<TData, TVariables> = {
 	method?: ApiRequest["method"];
 	data?: TVariables;
 	params?: Record<string, string>;
-	options?: Omit<UseMutationOptions<TData,  TVariables>, "mutationFn"  >;
+	options?: Omit<UseMutationOptions<TData, unknown,  TVariables>, "mutationFn"  >;
 };
 
 export const useApiMutation = <TData, TVariables>({
@@ -87,11 +97,11 @@ export const useApiMutation = <TData, TVariables>({
 	// params = undefined,
 	options = {},
 }: UseApiMutationOptions<TData, TVariables>) => {
-	const mutationOptions: UseMutationOptions<TData,  TVariables> = {
+	const mutationOptions: UseMutationOptions<TData, unknown,  TVariables> = {
 		...options,
 		mutationFn: async (params: TVariables) => {
 			return await callApi( { path,  method, params });
 		},
 	};
-	return useMutation<TData,  TVariables>(mutationOptions);
+	return useMutation<TData, unknown, TVariables>(mutationOptions);
 };

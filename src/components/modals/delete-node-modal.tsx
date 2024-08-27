@@ -1,15 +1,19 @@
 import { ContextModalProps } from "@mantine/modals";
-import { Button, Box, Group, Text } from "@mantine/core";
+import {Button, Box, Group, Text, Stack} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import {DeleteNodeRequest,  useApiDeleteNode} from "../../api/tree-api-hooks.ts";
+import {useState} from "react";
 
 type FormValues = DeleteNodeRequest;
 
 export type DeleteNodeModalProps = ContextModalProps<Record<string, unknown>>;
 
 export const DeleteNodeModal = ({ context, id, innerProps }: DeleteNodeModalProps) => {
+
+  const [error, setError] = useState(undefined)
+
   const queryClient = useQueryClient();
   const mutation = useApiDeleteNode({
     // mutationKey: ["spaces"],
@@ -22,13 +26,12 @@ export const DeleteNodeModal = ({ context, id, innerProps }: DeleteNodeModalProp
       });
       context.closeModal(id);
     },
-    onError: () => {
+    onError: (e) => {
 
-      // const error = e as unknown as string
-      // console.log("error ---- :", error);
+      setError(e.message)
       notifications.show({
         title: "Error",
-        message:  "Something bad happened.",
+        message:  e.message,
         color: "red",
       });
     },
@@ -46,20 +49,28 @@ export const DeleteNodeModal = ({ context, id, innerProps }: DeleteNodeModalProp
   });
 
   const handleSubmit = (values: FormValues) => {
-    mutation.mutateAsync(values as unknown as void);
+    mutation.mutateAsync(values);
   };
-
 
   return (
     <Box maw={340} mx="auto">
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Text>{`Are you sure you want to delete "${innerProps.nodeName}"`}</Text>
+      {
+        !error ? (
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Text>{`Are you sure you want to delete "${innerProps.nodeName}"`}</Text>
 
-        <Group justify="flex-end" mt="md">
-          <Button variant="default" onClick={() => context.closeModal(id)}>Cancel</Button>
-          <Button type="submit">Delete</Button>
-        </Group>
-      </form>
+            <Group justify="flex-end" mt="md">
+              <Button variant="default" onClick={() => context.closeModal(id)}>Cancel</Button>
+              <Button type="submit">Delete</Button>
+            </Group>
+          </form>
+        ) : (
+          <Stack gap="md">
+            <Text>{error}</Text>
+            <Button fullWidth variant="default" onClick={() => context.closeModal(id)}>Cancel</Button>
+          </Stack>
+        )
+      }
     </Box>
   );
 };
