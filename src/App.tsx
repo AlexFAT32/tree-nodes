@@ -28,6 +28,7 @@ function App() {
   if (isLoading || !data) {
     return <Loader color={"blue"} />
   }
+  
 
   return (
     <Container >
